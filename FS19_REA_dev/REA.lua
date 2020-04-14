@@ -3,17 +3,17 @@
 -- author: 900Hasse
 -- date: 30.07.2019
 --
--- V1.1.0.0
+-- V1.2.0.0
 --
 -----------------------------------------
 -- TO DO
 ---------------
 -- 
 -- Remake combine power need?
--- Check translation wheel.drivenode relative wheel.node
--- Add more bounce to smaller wheels
--- Somehow make vehicles get more inertia and momentum
--- Increas friction when handbrake is active to avoid sliding
+-- Can centor of gravity be calculated
+-- User help when pushing a button
+-- Turn on/off GUI
+-- 
 
 
 -----------------------------------------
@@ -42,9 +42,10 @@ function REA:draw(dt)
 end;
 
 function REA:update(dt)
+
 	-- If Client draw vehicle status on GUI
 	local UseGUI = true;
-	if g_client and UseGUI then
+	if g_client and not g_gui:getIsGuiVisible() and UseGUI then
 		-- Check number of vehicles
 		numVehicles = table.getn(g_currentMission.vehicles);
 		-- If vehicles present run code
@@ -53,9 +54,9 @@ function REA:update(dt)
 			if numVehicles >= 1 then
 				-- Search for controlled vehicle
 				for VehicleIndex=1, numVehicles do
-					-- Spara "vehicle" lokalt
+					-- Save "vehicle" to local
 					local vehicle = g_currentMission.vehicles[VehicleIndex];			
-					-- Kontrollera om aktuellt fordon finns
+					-- Check if current vehicle exists
 					if vehicle ~= nil then
 						if vehicle.spec_motorized then
 							if vehicle.spec_wheels ~= nil then	
@@ -77,6 +78,7 @@ function REA:update(dt)
 	if g_server ~= nil then
 		-- Save global values
 		if REA.GlobalValuesSet ~= true then
+
 			-- TireType sink parameters
 			REA.TireTypeMaxSinkFrictionReduced = {1,1,1,1};
 			REA.TireTypeSinkStuckLevel = {1,1,1,1};
@@ -115,8 +117,13 @@ function REA:update(dt)
 			-----------------------------------------------------------------------------------
 			-- Global settings of wheel tiretypes and friction
 			-----------------------------------------------------------------------------------
+			-- Max sink of rootcrpos
+			Wheels.MAX_SINK[RootCrops] = 0.1;
 			-- Factor max sink of wheel based on radius(original value 0.2)
 			REA.WheelRadiusMaxSinkFactor = 0.5;
+			-- Sink parameters when wheel in conctact with a lowspot with water (percentage)
+			REA.TireTypeMaxSinkFrictionReducedLowSpot = 100;
+			REA.TireTypeSinkStuckLevelLowSpot = 75;
 			-------------------------------------
 			-- MUD
 			-- TireType on different groundtypes
@@ -131,15 +138,15 @@ function REA:update(dt)
 			-- Sink parameters (percentage)
 			REA.TireTypeMaxSinkFrictionReduced[TireTypeMUD] = 50;
 			REA.TireTypeSinkStuckLevel[TireTypeMUD] = 101;
-			REA.TireTypeSinkPerMeterSpinning[TireTypeMUD] = 0.055;
+			REA.TireTypeSinkPerMeterSpinning[TireTypeMUD] = 0.05;
 			-- Min rolling coefficient
 			REA.TireTypeMinRollingCoeff[TireTypeMUD] = 0.04;
 			-------------------------------------
 			-- OFFROAD
 			-- TireType on different groundtypes
 			WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffs[ROAD] = 1.25;
-			WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffs[HARD_TERRAIN] = 0.8;
-			WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffs[SOFT_TERRAIN] = 0.6;
+			WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffs[HARD_TERRAIN] = 0.9;
+			WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffs[SOFT_TERRAIN] = 0.7;
 			WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffs[FIELD] = 0.6;
 			WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffsWet[ROAD] = WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffs[ROAD]*0.9;
 			WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffsWet[HARD_TERRAIN] = WheelsUtil.tireTypes[TireTypeOFFROAD].frictionCoeffs[HARD_TERRAIN]*0.8;
@@ -156,7 +163,7 @@ function REA:update(dt)
 			-- TireType on different groundtypes
 			WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffs[ROAD] = 1.5;
 			WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffs[HARD_TERRAIN] = 0.7;
-			WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffs[SOFT_TERRAIN] = 0.55;
+			WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffs[SOFT_TERRAIN] = 0.6;
 			WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffs[FIELD] = 0.55;
 			WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffsWet[ROAD] = WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffs[ROAD]*0.9;
 			WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffsWet[HARD_TERRAIN] = WheelsUtil.tireTypes[TireTypeSTREET].frictionCoeffs[HARD_TERRAIN]*0.8;
@@ -173,8 +180,8 @@ function REA:update(dt)
 			-- TireType on different groundtypes
 			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[ROAD] = 1.0;
 			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[HARD_TERRAIN] = 1.0;
-			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[SOFT_TERRAIN] = 0.9;
-			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[FIELD] = 0.9;
+			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[SOFT_TERRAIN] = 1.0;
+			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[FIELD] = 1.0;
 			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffsWet[ROAD] = WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[ROAD]*0.7;
 			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffsWet[HARD_TERRAIN] = WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[HARD_TERRAIN]*0.8;
 			WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffsWet[SOFT_TERRAIN] = WheelsUtil.tireTypes[TireTypeCRAWLER].frictionCoeffs[SOFT_TERRAIN]*0.8;
@@ -182,9 +189,9 @@ function REA:update(dt)
 			-- Sink parameters (percentage)
 			REA.TireTypeMaxSinkFrictionReduced[TireTypeCRAWLER] = 30;
 			REA.TireTypeSinkStuckLevel[TireTypeCRAWLER] = 101;
-			REA.TireTypeSinkPerMeterSpinning[TireTypeCRAWLER] = 0.04;
+			REA.TireTypeSinkPerMeterSpinning[TireTypeCRAWLER] = 0.03;
 			-- Min rolling coefficient
-			REA.TireTypeMinRollingCoeff[TireTypeCRAWLER] = 0.05;
+			REA.TireTypeMinRollingCoeff[TireTypeCRAWLER] = 0.1;
 
 
 			-----------------------------------------------------------------------------------
@@ -213,11 +220,37 @@ function REA:update(dt)
 			REA.SowingMachineMultiplier[Grass] = 1.4;
 			REA.SowingMachineMultiplier[Road] = 2;
 			-- Power needed for balers and foragewagons to fill 100l/s for filltype with a mass of 1 ton/m2
-			REA.FillspeedPowerNeed = 600;
+			REA.FillspeedPowerNeed = 450;
 
 			-- Global values set
 			REA.GlobalValuesSet = true
 			print("Global REA variables loaded")
+		end;
+
+		-----------------------------------------------------------------------------------
+		-- Check if REA.Dynamic dirt is loadad and all map is scanned for low spots
+		-----------------------------------------------------------------------------------
+		-- Initialize variable for Dynamic dirt
+		if REA.DynamicDirtActivated == nil then
+			REA.DynamicDirtFound = false;
+			REA.DynamicDirtActivated = false;
+		end;
+		-- Check if Dynamic dirt is loaded and all map scanned
+		if not REA.DynamicDirtActivated then
+			-- Check if dynamic dirt is loaded
+			if not REA.DynamicDirtFound and g_modIsLoaded.FS19_READynamicDirt ~= nil then
+				print("REA Dynamic dirt: Found by REA")
+				REA.DynamicDirtFound = true;
+			end;
+			-- If dynamic dirt is loaded wait until all area is scanned before starting functions
+			if REA.DynamicDirtFound then
+				if WheelsUtil.LowspotScanCompleted ~= nil then
+					if WheelsUtil.LowspotScanCompleted then
+						print("REA Dynamic dirt: Scan completed detected by REA")
+						REA.DynamicDirtActivated = true;
+					end;
+				end;
+			end;
 		end;
 
 		-- Determine number of vehicles
@@ -237,18 +270,6 @@ function REA:update(dt)
 						-- If vehicle is motorized save speed to use for shifting gear
 						if vehicle.spec_motorized ~= nil then
 							if vehicle.spec_motorized.motor ~= nil then
-
---								!IN DEVELOPMENT!
---								if vehicle:getIsControlled()  then
---									local TotalMass = 0;
---									for _, component in ipairs(vehicle.components) do
---										TotalMass = component.mass + TotalMass;										
---										renderText(0.2, 0.10, 0.03,"angular damping: " .. getAngularDamping(component.node));
---										renderText(0.2, 0.15, 0.03,"linear damping: " .. getLinearDamping(component.node));
---									end;
---									renderText(0.2, 0.20, 0.03,"Total mass: " .. TotalMass);
---								end;
-
 								-- If vehicle is not motorized increase friction to avoid gliding
 								MotorizedVehicle = true;
 								-- Adjust speed of vehicle if PTO demands more power than motor can give
@@ -268,7 +289,7 @@ function REA:update(dt)
 								end;
 							end;
 							-- Update wheels
-							REA:UpdateWheels(vehicle.spec_wheels,MotorizedVehicle,IgnoreRollingResistance,dt);
+							REA:UpdateWheels(vehicle.spec_wheels,vehicle.spec_crawlers,MotorizedVehicle,IgnoreRollingResistance,dt);
 						end;
 						-- Adjust power need and speed of power consuming vehicle
 						REA:UpdatePowerMultiplier(vehicle,dt);
@@ -295,6 +316,43 @@ function REA:DrawStatus(vehicle,dt)
 		vehicle.GUIMotorLoad = 0;
 		vehicle.GUISlip = 0;
 	end;
+
+--	-- Create overlays
+--	if REA.OverlaysCreated == nil then
+--		REA.overlay = {};
+--		-- Transparancy
+--		local Transparancy = 0.75;
+--		-- Create overlay for slip
+--		if REA.overlay["slip"] == nil then
+--			REA.overlay["slip"] = createImageOverlay(REA.FilePath .. "media/SLIP_ICON.dds");
+--			setOverlayColor(REA.overlay["slip"], 1, 0, 0, Transparancy);
+--		end;
+--		-- Create overlay for load
+--		if REA.overlay["load"] == nil then
+--			REA.overlay["load"] = createImageOverlay(REA.FilePath .. "media/LOAD_ICON.dds");
+--			setOverlayColor(REA.overlay["load"], 0, 1, 0, Transparancy);
+--		end;
+--		-- Set overlays created
+--		REA.OverlaysCreated = true;
+--	end;
+
+--	-- Text settings
+--	local FontSize = 0.01;
+--	local TextPadding = 0.001;
+--	UiScale = 1;
+--	if g_gameSettings.uiScale ~= nil then
+--		UiScale = g_gameSettings.uiScale;
+--	end
+--	local Width = ((FontSize + TextPadding) * 1.4 ) * UiScale;
+--	local Height = (((FontSize + TextPadding) * 1.4) * 2 ) * UiScale;
+
+--	local posX = 0.5;
+--	local posY = 0.5;
+--	renderOverlay(REA.overlay["slip"], posX, posY, Width, Height);
+
+--	local posX = 0.5;
+--	local posY = 0.8;
+--	renderOverlay(REA.overlay["load"], posX, posY, Width, Height);
 
 	--------------------------------------------------------------------
 	-- Get engine RPM
@@ -386,27 +444,23 @@ function REA:DrawStatus(vehicle,dt)
 
 	--------------------------------------------------------------------
 	-- Write GUI
-	local OffsetSideways = 0.07;
-	local TextSize = 0.015;
-	local offsetBetweenLines = TextSize * 1.2;
-	local HorizontalPosition = 1 - (2*offsetBetweenLines);
-
-	
+	local OffsetSideways = 0.65;
+	local TextSize = 0.02;
 	-- Draw motor load
 	if vehicle.GUIMotorLoad < 10 then
-		renderText(OffsetSideways, HorizontalPosition + offsetBetweenLines, TextSize,"Motor load:   " .. vehicle.GUIMotorLoad .. "%");
+		renderText(OffsetSideways, 0.13, TextSize,"Motor load:   " .. vehicle.GUIMotorLoad .. "%");
 	elseif vehicle.GUIMotorLoad > 99 then
-		renderText(OffsetSideways, HorizontalPosition + offsetBetweenLines, TextSize,"Motor load: " .. vehicle.GUIMotorLoad .. "%");
+		renderText(OffsetSideways, 0.13, TextSize,"Motor load: " .. vehicle.GUIMotorLoad .. "%");
 	else
-		renderText(OffsetSideways, HorizontalPosition + offsetBetweenLines, TextSize,"Motor load:  " .. vehicle.GUIMotorLoad .. "%");
+		renderText(OffsetSideways, 0.13, TextSize,"Motor load:  " .. vehicle.GUIMotorLoad .. "%");
 	end;
 	-- Draw slip
 	if vehicle.GUISlip < 10 then
-		renderText(OffsetSideways, HorizontalPosition, TextSize,"Slip:   " .. vehicle.GUISlip .. "%");
+		renderText(OffsetSideways, 0.10, TextSize,"Slip:   " .. vehicle.GUISlip .. "%");
 	elseif vehicle.GUISlip > 99 then
-		renderText(OffsetSideways, HorizontalPosition, TextSize,"Slip: " .. vehicle.GUISlip .. "%");
+		renderText(OffsetSideways, 0.10, TextSize,"Slip: " .. vehicle.GUISlip .. "%");
 	else
-		renderText(OffsetSideways, HorizontalPosition, TextSize,"Slip:  " .. vehicle.GUISlip .. "%");
+		renderText(OffsetSideways, 0.10, TextSize,"Slip:  " .. vehicle.GUISlip .. "%");
 	end;
 end
 
@@ -414,30 +468,45 @@ end
 -----------------------------------------------------------------------------------	
 -- Function to calculate friction and add rolling resistance
 -----------------------------------------------------------------------------------
-function REA:UpdateWheels(spec_wheels,MotorizedVehicle,IgnoreRollingResistance,dt)
+function REA:UpdateWheels(spec_wheels,spec_crawlers,MotorizedVehicle,IgnoreRollingResistance,dt)
 
 	-- How many wheels do the vehicle have
 	local numWheels = table.getn(spec_wheels.wheels);
 
-	-- Initialize timer
-	if spec_wheels.TimerDelayResistance == nil then
-		spec_wheels.TimerDelayResistance = 0;
-	end;
-
---	-- When timer runs out start friction and resistance
---	if spec_wheels.TimerDelayResistance < 250 then
---		-- Run timer
---		spec_wheels.TimerDelayResistance = spec_wheels.TimerDelayResistance + dt;
---	else
-
 	-- Check if wheels added to physics
 	if spec_wheels.isAddedToPhysics then
+
+		-- Tiretypes
+		local TireTypeMUD = 1;
+		local TireTypeOFFROAD = 2;
+		local TireTypeSTREET = 3;
+		local TireTypeCRAWLER = 4;
+
 		-- Loop to calculate and update fricton, rolling resistance and sideway resistance for each wheel
 		for Wheel=1,numWheels do
 			-- Save to local variable wheel
 			local wheel = spec_wheels.wheels[Wheel];
+
 			-- Check if wheel shape is created
 			if wheel.wheelShapeCreated then
+				-- Check if crawlertracks and if present in crawler
+				local CrawlersFactor = 1;
+				if wheel.tireType == TireTypeCRAWLER then
+					CrawlersFactor = 0.4;
+				end;
+
+				-- Ground types
+				local ROAD = 1;
+				local HARD_TERRAIN = 2;
+				local SOFT_TERRAIN = 3;
+				local FIELD = 4;
+				-- Get ground type
+				local groundType = 0;
+				if wheel.densityType ~= nil and wheel.lastColor[4] ~= nil then
+					local isOnField = wheel.densityType ~= 0;
+					local depth = wheel.lastColor[4];
+					groundType = WheelsUtil.getGroundType(isOnField, wheel.contact ~= Wheels.WHEEL_GROUND_CONTACT, depth);
+				end;
 				-- Read width and Radius to use when calculating frictino
 				local ActWheeleWidth = wheel.width;
 				local ActWheeleRadius = wheel.radiusOriginal;
@@ -448,65 +517,28 @@ function REA:UpdateWheels(spec_wheels,MotorizedVehicle,IgnoreRollingResistance,d
 				end;
 				-- Update sideway speed and direction of active wheel
 				REA:UpdateWheelDirectionAndSpeed(wheel,dt);
-	
-				------------------------------------------------------
-				-- Change values for PerlinNoise depending on size of wheel and ground type
-				------------------------------------------------------
-				-- Update if wheel is moving
-				if wheel.RollingDirectionSpeed >= 0.2 or wheel.SideWaySpeed >= 0.2 then
-					-- Terrain values
-					local Road = 0;
-					local Cultivated = 1;
-					local Plowed = 2;
-					local HarvestedSowed = 3;
-					local RootCrops = 4;
-					local Grass = 5;
-	
-					-- Original values for Perlin noise
-					local OrgPerlinNoiseSink = {randomSeed = 123,randomFrequency = 0.2,persistence = 0,numOctaves = 2};
-					local OrgPerlinNoiseWobble = {randomSeed = 321,randomFrequency = 0.8,persistence = 0,numOctaves = 4};
-	
-					-- Load original values
-					wheel.perlinNoiseSink = OrgPerlinNoiseSink;
-					wheel.perlinNoiseWobble = OrgPerlinNoiseWobble;
-	
-					-- Settings för perlin sink
-					if wheel.lastTerrainValue >= 1 and wheel.lastTerrainValue <= 5 and false then
-						-- Cultivated
-						if wheel.lastTerrainValue == Cultivated then
-							-- Wobble
-							wheel.perlinNoiseWobble.persistence = 0;
-							wheel.perlinNoiseWobble.numOctaves = 3;
-							wheel.perlinNoiseWobble.randomFrequency = 0.8;
-						-- Plowed
-						elseif wheel.lastTerrainValue == Plowed then
-							-- Wobble
-							wheel.perlinNoiseWobble.persistence = 0;
-							wheel.perlinNoiseWobble.numOctaves = 4;
-							wheel.perlinNoiseWobble.randomFrequency = 0.8;
-						-- Harvested / Planted
-						elseif wheel.lastTerrainValue == HarvestedSowed then
-							-- Wobble
-							wheel.perlinNoiseWobble.persistence = 0;
-							wheel.perlinNoiseWobble.numOctaves = 3;
-							wheel.perlinNoiseWobble.randomFrequency = 0.8;
-						-- Rootcrops
-						elseif wheel.lastTerrainValue == RootCrops then
-							-- Wobble
-							wheel.perlinNoiseWobble.persistence = 0;
-							wheel.perlinNoiseWobble.numOctaves = 4;
-							wheel.perlinNoiseWobble.randomFrequency = 0.8;
-						-- Grass
-						elseif wheel.lastTerrainValue == Grass then
-							-- Wobble
-							wheel.perlinNoiseWobble.persistence = 0;
-							wheel.perlinNoiseWobble.numOctaves = 3;
-							wheel.perlinNoiseWobble.randomFrequency = 0.8;
+				-- Get speed based on xDrive
+				wheel.SpeedBasedOnXdrive = REA:WheelSpeedFromXdrive(wheel,dt);
+				-- If REA dynamic dirt activated check if wheel is in a lowspot with water
+				local WheelInLowspotWithWater = false;
+				if REA.DynamicDirtActivated then
+					-- Get number of lowspots
+					local NumOfLowspots = table.getn(WheelsUtil.LowspotWaterLevelNode);
+					-- If any lowspot is created evaluate if wheel is in contact
+					if NumOfLowspots > 0 then
+						-- If wheel is moving update
+						local MinSpeedForUpdate = 0.1;
+						if wheel.SpeedBasedOnXdrive > MinSpeedForUpdate or wheel.RollingDirectionSpeed > MinSpeedForUpdate or wheel.SideWaySpeed > MinSpeedForUpdate then
+							-- Get if wheel is in lowspot with water
+							wheel.InLowspotWithWater = REA:GetIsInLowspotWithWater(wheel);
 						end;
+					else
+						-- If no lowspots created
+						wheel.InLowspotWithWater = false;
 					end;
-					--renderText(0.2, 0.1+(Wheel*0.04), 0.03,"Pers: " .. wheel.perlinNoiseSink.persistence .. " Freq: " .. wheel.perlinNoiseSink.randomFrequency .. " Octa: " .. wheel.perlinNoiseSink.numOctaves);
+					WheelInLowspotWithWater = wheel.InLowspotWithWater;
 				end;
-		
+
 				------------------------------------------------------
 				-- Calculate and update friction for wheel
 				------------------------------------------------------
@@ -523,25 +555,29 @@ function REA:UpdateWheels(spec_wheels,MotorizedVehicle,IgnoreRollingResistance,d
 					------------------------------------------------------
 					-- Sink Friction calculation
 					-- Read parameters for current tiretype
-					ActWheelMaxSinkReducedFrictionPercentage = REA.TireTypeMaxSinkFrictionReduced[wheel.tireType];
-					ActWheelStuckPerectangeLevel = REA.TireTypeSinkStuckLevel[wheel.tireType];
+					local ActWheelMaxSinkReducedFrictionPercentage = REA.TireTypeMaxSinkFrictionReduced[wheel.tireType];
+					local ActWheelStuckPerectangeLevel = REA.TireTypeSinkStuckLevel[wheel.tireType];
+					-- If wheel is in a lowspot make wheel able to get stuck
+					if WheelInLowspotWithWater then
+						ActWheelMaxSinkReducedFrictionPercentage = REA.TireTypeMaxSinkFrictionReducedLowSpot;
+						ActWheelStuckPerectangeLevel = REA.TireTypeSinkStuckLevelLowSpot;
+					end;
 					-- Calculate sink percentage
 					local ActWheelSinkPercentage = (ActWheelSink / (REA.WheelRadiusMaxSinkFactor*ActWheeleRadius))*100;
 					local FrictionFactorBySink = 1;
-					-- Get speed based on xDrive
-					wheel.SpeedBasedOnXdrive = REA:WheelSpeedFromXdrive(wheel,dt);
-					-- If not handbrake active calulate friction based on wheel sink
+					-- Update friction if wheel is turning
 					if wheel.SpeedBasedOnXdrive > 0.1 then
 						-- Calculate reduced friction casued by sink
 						if ActWheelSinkPercentage < ActWheelStuckPerectangeLevel then
 							FrictionFactorBySink = 1-((ActWheelMaxSinkReducedFrictionPercentage*(ActWheelSinkPercentage/100))/100);
+							-- If wheel is in a lowspot with water decrease friction
+							if WheelInLowspotWithWater then
+								FrictionFactorBySink = FrictionFactorBySink * 0.5;
+							end;
 						else
 							FrictionFactorBySink = 0;
 						end;
 					end;
-	
-					-- DEBUG
-					--DebugUtil.drawDebugNode(wheel.driveNode, "Speed: " .. wheel.SpeedBasedOnXdrive, false)
 	
 					------------------------------------------------------
 					-- Add the calculated friction to wheel
@@ -554,70 +590,97 @@ function REA:UpdateWheels(spec_wheels,MotorizedVehicle,IgnoreRollingResistance,d
 				------------------------------------------------------
 				-- Rolling and sideway resistance for wheel
 				------------------------------------------------------
-				------------------------------------------------------
-				-- Save load on wheel to use for rolling resistance calculation
-				local ActWheelLoad = 0.001;
 				if wheel.node ~= nil and wheel.wheelShape ~= nil then
-					if getWheelShapeContactForce(wheel.node, wheel.wheelShape) ~= nil and wheel.contact ~= Wheels.WHEEL_NO_CONTACT then
-						ActWheelLoad = getWheelShapeContactForce(wheel.node, wheel.wheelShape);
-						-- If negative load set load to zero
-						if ActWheelLoad < 0.001 then
-							ActWheelLoad = 0.001;
+					local MinSpeedToAddForce = 0.2;
+					if wheel.RollingDirectionSpeed >= MinSpeedToAddForce or wheel.SideWaySpeed >= MinSpeedToAddForce then
+						-- Save load on wheel to use for rolling resistance calculation
+						local ActWheelLoad = 0.001;
+						if getWheelShapeContactForce(wheel.node, wheel.wheelShape) ~= nil and wheel.contact ~= Wheels.WHEEL_NO_CONTACT then
+							ActWheelLoad = getWheelShapeContactForce(wheel.node, wheel.wheelShape);
+							-- If negative load set load to zero
+							if ActWheelLoad < 0.001 then
+								ActWheelLoad = 0.001;
+							end;
 						end;
+
+						-- DEBUG
+						--DebugUtil.drawDebugNode(wheel.driveNode,"Wheel: " .. Wheel .. ", Width: " .. ActWheeleWidth .. ", Radius: " .. ActWheeleRadius .. ", Load: " .. ActWheelLoad, false)
+
+						-- Rolling resistance in rolling direction
+						------------------------------------------------------
+						-- Calculate force to add
+						local RollingForceToAdd = 0;
+						if wheel.RollingDirectionSpeed >= MinSpeedToAddForce and not IgnoreRollingResistance then
+							-- Rolling reistance coefficient = sqrt(WheelSink(m)*((WheelRadius(m)*2)))
+							-- Calculate coefficient
+							local ActWheelRollConf = math.sqrt(ActWheelSink/(ActWheeleRadius*2));
+							-- If coefficient to low use min value
+							if ActWheelRollConf < REA.TireTypeMinRollingCoeff[wheel.tireType] then
+								ActWheelRollConf  = REA.TireTypeMinRollingCoeff[wheel.tireType];
+							end;
+							-- Rolling resistance(kN) = coefficient*(Wheelload(kN)/WheelRadius(m))
+							-- Calculate resistance force
+							local ActWheelRollForce = ActWheelRollConf*(ActWheelLoad/ActWheeleRadius);
+							-- In case of negative force, use zero force
+							if ActWheelRollForce < 0 then
+								ActWheelRollForce = 0;
+							end;
+							-- Factor of calulated farco to add
+							local RollingResistanceForceFactor = 0.4 * CrawlersFactor;
+							-- Calculate force with force factor
+							RollingForceToAdd = ActWheelRollForce*RollingResistanceForceFactor;
+							-- Add force slowly in low speed
+							if wheel.RollingDirectionSpeed < 1 then
+								RollingForceToAdd = RollingForceToAdd*wheel.RollingDirectionSpeed;
+							end;
+						end;
+						-- Sideway resistance
+						------------------------------------------------------
+						-- Calculate force to add
+						local SidewayForceToAdd = 0;
+						if wheel.SideWaySpeed >= MinSpeedToAddForce then
+							-- Rolling reistance coefficient = sqrt(WheelSink(m)*((WheelRadius(m)*2)))
+							-- Min sink depending on groundtype
+							local MinSink = 0;
+							if groundType == SOFT_TERRAIN then
+								MinSink = 0.04;
+							elseif groundType == FIELD then
+								MinSink = 0.06;
+							end;
+							-- Calculate coefficient
+							local ActWheelRollConf = math.sqrt(math.max(MinSink,ActWheelSink)/(ActWheeleRadius*2));
+							-- If coefficient to low use min value
+							if ActWheelRollConf < REA.TireTypeMinRollingCoeff[wheel.tireType] then
+								ActWheelRollConf  = REA.TireTypeMinRollingCoeff[wheel.tireType];
+							end;
+							-- Rolling resistance(kN) = coefficient*(Wheelload(kN)/WheelRadius(m))
+							-- Calculate resistance force
+							local ActWheelRollForce = ActWheelRollConf*(ActWheelLoad/ActWheeleRadius);
+							-- In case of negative force, use zero force
+							if ActWheelRollForce < 0 then
+								ActWheelRollForce = 0;
+							end;
+							-- Factor of calulated farco to add
+							local SidewayResistanceForceFactor = 1.0 * CrawlersFactor;
+							if IgnoreRollingResistance then
+								SidewayResistanceForceFactor = SidewayResistanceForceFactor / 2;
+							end;
+							-- Calculate force with force factor
+							SidewayForceToAdd = ActWheelRollForce*SidewayResistanceForceFactor;
+							-- Add force slowly in low speed
+							if wheel.SideWaySpeed < 1 then
+								SidewayForceToAdd = SidewayForceToAdd*wheel.SideWaySpeed;
+							end;
+						end;
+						------------------------------------------------------
+						-- Add force in the other direction fo the moving direction
+						local LForceX, LForceY, LForceZ = localDirectionToLocal(wheel.driveNode,wheel.node,-(wheel.SideWayMovingDirection*SidewayForceToAdd),0,0);						
+						local WForceX, WForceY, WForceZ = localDirectionToWorld(wheel.node,LForceX,LForceY,LForceZ+(-(wheel.RollingMovingDirection*RollingForceToAdd)));
+						-- Get translation where force should be added
+						local WheelX, WheelY, WheelZ = getTranslation(wheel.driveNode);
+						-- Add the calculated force to physics
+						addForce (wheel.node, WForceX, WForceY, WForceZ, WheelX, WheelY, WheelZ, true);
 					end;
-				end;
-				-- Rolling reistance coefficient = sqrt(WheelSink(m)*((WheelRadius(m)*2)))
-				-- Calculate coefficient
-				local ActWheelRollConf = math.sqrt(ActWheelSink/(ActWheeleRadius*2));
-				-- If coefficient to low use min value 
-				if ActWheelRollConf < REA.TireTypeMinRollingCoeff[wheel.tireType] then
-					ActWheelRollConf  = REA.TireTypeMinRollingCoeff[wheel.tireType];
-				end;
-				-- Rolling resistance(kN) = coefficient*(Wheelload(kN)/WheelRadius(m))
-				-- Calculate rolling resistance
-				local ActWheelRollForce = ActWheelRollConf*(ActWheelLoad/ActWheeleRadius);
-				-- In case of negative force, use zero force
-				if ActWheelRollForce < 0 then
-					ActWheelRollForce = 0;
-				end;
-				------------------------------------------------------
-				-- Get translation where force should be added
-				local WheelX, WheelY, WheelZ = getTranslation(wheel.driveNode)
-				local MinSpeedToAddForce = 0.2;
-				if wheel.RollingDirectionSpeed >= MinSpeedToAddForce or wheel.SideWaySpeed >= MinSpeedToAddForce then
-					-- Rolling resistance in rolling direction
-					-- Factor of calulated farco to add
-					local RollingResistanceForceFactor = 0.4;
-					-- Calculate force to add
-					local RollingForceToAdd = 0;
-					if wheel.RollingDirectionSpeed >= MinSpeedToAddForce and not IgnoreRollingResistance then
-						RollingForceToAdd = ActWheelRollForce*RollingResistanceForceFactor;
-					end;
-					-- Sideway resistance
-					-- Factor of calulated farco to add
-					local SidewayResistanceForceFactor = 1.0;
-					if IgnoreRollingResistance then
-						SidewayResistanceForceFactor = SidewayResistanceForceFactor / 2;
-					end;
-					-- Calculate force to add
-					local SidewayForceToAdd = 0;
-					if wheel.SideWaySpeed >= MinSpeedToAddForce then
-						SidewayForceToAdd = ActWheelRollForce*SidewayResistanceForceFactor;
-					end;
-					-- Add force slowly in low speed
-					if wheel.RollingDirectionSpeed < 1 then
-						RollingForceToAdd = RollingForceToAdd*wheel.RollingDirectionSpeed;
-					end;
-					if wheel.SideWaySpeed < 1 then
-						SidewayForceToAdd = SidewayForceToAdd*wheel.SideWaySpeed;
-					end;
-					-- Add force in the other direction fo the moving direction
-					local LForceX, LForceY, LForceZ = localDirectionToLocal(wheel.driveNode,wheel.node,-(wheel.SideWayMovingDirection*SidewayForceToAdd),0,0);						
-					local WForceX, WForceY, WForceZ = localDirectionToWorld(wheel.node,LForceX,LForceY,LForceZ+(-(wheel.RollingMovingDirection*RollingForceToAdd)));
-					-- Add the calculated force to physics
-					addForce (wheel.node, WForceX, WForceY, WForceZ, WheelX, WheelY, WheelZ, true);
-					-- DEBUG
-					--DebugUtil.drawDebugNode(wheel.driveNode, "rolling dir: " .. wheel.RollingMovingDirection .. " Side dir: " .. wheel.SideWayMovingDirection, false)
 				end;
 			end;
 		end;
@@ -687,6 +750,48 @@ end
 -----------------------------------------------------------------------------------
 function REA:RoundValue(x)
 	return x>=0 and math.floor(x+0.5) or math.ceil(x-0.5)
+end
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------	
+-- Function to determine if wheel is in a lowspot with
+-----------------------------------------------------------------------------------
+function REA:GetIsInLowspotWithWater(Wheel)
+	-- Get translation of wheel
+	local WheelX, WheelY, WheelZ = getWorldTranslation(Wheel.driveNode);
+	-- Get number of lowspots
+	local NumOfLowspots = table.getn(WheelsUtil.LowspotWaterLevelNode);
+	-- Loop to calculate and update fricton, rolling resistance and sideway resistance for each wheel
+	for LowSpot=1,NumOfLowspots do
+		-- Get depth of first lospot to determine if water in low spots
+		local lX, WaterLevel, lZ = getTranslation(WheelsUtil.LowspotWaterLevelNode[LowSpot]);
+		-- Check if there is water in lowspots
+		if WaterLevel > 0 then
+			-- Get distance betweene wheel and lowspot
+			local LowspotX, LowspotY, LowspotZ = getWorldTranslation(WheelsUtil.LowspotRootNode[LowSpot]);
+			-- Calculate distance
+			local DistanceX = math.abs(WheelX-LowspotX);
+			local DistanceY = math.abs(WheelY-LowspotY);
+			local DistanceZ = math.abs(WheelZ-LowspotZ);
+			-- Determine if the wheel in range of lowspot
+			if DistanceX <= WheelsUtil.LowspotSize[LowSpot] and DistanceZ <= WheelsUtil.LowspotSize[LowSpot] then
+				-- Check if wheel is below waterlevel
+				if (DistanceY - WaterLevel) - Wheel.radiusOriginal <= 0 then
+					return true;
+				end;
+			end;
+		else
+			return false;
+		end;
+	end;
+	return false;
 end
 
 
@@ -1267,11 +1372,7 @@ function Wheels:loadWheelData(wheel, xmlFile, configKey)
 	wheel.tireTrackAtlasIndex = getXMLInt(xmlFile, configKey..".tire#tireTrackAtlasIndex") or wheel.tireTrackAtlasIndex or 0
 
 	wheel.tireType = WheelsUtil.getTireType(tireTypeName)
-	if wheel.tireType == nil then
-		-- Check if tiretrackindex present or else use "mud"
-		wheel.tireType = REA:DetermineTireType(wheel.tireTrackAtlasIndex)
-	end
-	
+
 	wheel.widthOffset = getXMLFloat(xmlFile, configKey..".tire#widthOffset") or wheel.widthOffset or 0.0
 	wheel.xOffset = getXMLFloat(xmlFile, configKey..".tire#xOffset") or wheel.xOffset or 0
 	wheel.maxDeformation = getXMLFloat(xmlFile, configKey..".tire#maxDeformation") or wheel.maxDeformation or 0
@@ -1396,7 +1497,7 @@ function Wheels:loadWheelPhysicsData(xmlFile, key, wheelnamei, wheel)
 			wheel.tireGroundFrictionCoeff = 1.0 -- This will be changed dynamically based on the tire-ground pair
 
 			if wheel.tireType == nil then
-				local tireTypeName = ConfigurationUtil.getConfigurationValue(xmlFile, key, physicsKey, "#tireType", getXMLString, nil, nil, nil)
+				local tireTypeName = ConfigurationUtil.getConfigurationValue(xmlFile, key, physicsKey, "#tireType", getXMLString, nil, nil, nil)				
 				if tireTypeName == nil then
 					-- Check if tiretrackindex present else use "mud"
 					wheel.tireType = REA:DetermineTireType(wheel.tireTrackAtlasIndex)
@@ -1517,19 +1618,9 @@ function REA:REAupdateWheelSink(wheel, dt)
 						zPerlin = math.floor(zPerlin*100)*0.02
 
 						local perlinNoise;
-						-- REA: Get perlin noise settings from each wheel
-						if wheel.perlinNoiseSink == nil then
-							perlinNoise = Wheels.perlinNoiseSink
-						else
-							perlinNoise = wheel.perlinNoiseSink
-						end;
+						perlinNoise = Wheels.perlinNoiseSink
 						local noiseSink = 0.5 * (1 + getPerlinNoise2D(xPerlin*perlinNoise.randomFrequency, zPerlin*perlinNoise.randomFrequency, perlinNoise.persistence, perlinNoise.numOctaves, perlinNoise.randomSeed))
-						-- REA: Get perlin noise settings from each wheel
-						if wheel.perlinNoiseWobble == nil then
-							perlinNoise = Wheels.perlinNoiseWobble
-						else
-							perlinNoise = wheel.perlinNoiseWobble
-						end;
+						perlinNoise = Wheels.perlinNoiseWobble
 						local noiseWobble = 0.5 * (1 + getPerlinNoise2D(xPerlin*perlinNoise.randomFrequency, zPerlin*perlinNoise.randomFrequency, perlinNoise.persistence, perlinNoise.numOctaves, perlinNoise.randomSeed))
 	
 						-- estimiate pressure on surface
@@ -1546,6 +1637,10 @@ function REA:REAupdateWheelSink(wheel, dt)
 						tireLoad = tireLoad / gravity
 						local loadFactor = math.min(1.0, math.max(0, tireLoad / wheel.maxLatStiffnessLoad))
 						local wetnessFactor = g_currentMission.environment.weather:getGroundWetness()
+						-- Id REA dynamic dirt is loaded and wheel in standing
+						if REA.DynamicDirtActivated and wheel.InLowspotWithWater then
+							wetnessFactor = 1;
+						end;
 						noiseSink = 0.333*(2*loadFactor + wetnessFactor) * noiseSink
 						noiseValue = math.max(noiseSink, noiseWobble)
 	
@@ -1555,6 +1650,7 @@ function REA:REAupdateWheelSink(wheel, dt)
 				maxSink = Wheels.MAX_SINK[wheel.lastTerrainValue] or maxSink
 				local WheelRadiusMaxSink = REA.WheelRadiusMaxSinkFactor*wheel.radiusOriginal;
 
+
 				-- plowing effect
 				if wheel.lastTerrainValue == 2 and wheel.oppositeWheelIndex ~= nil then
 					local oppositeWheel = spec.wheels[wheel.oppositeWheelIndex]
@@ -1562,6 +1658,12 @@ function REA:REAupdateWheelSink(wheel, dt)
 						maxSink = maxSink * 1.3
 					end
 				end
+
+				-- Minimum max sink if wheel is in lowspot with water
+				local SinkOfLowSpot = 0.1;
+				if REA.DynamicDirtActivated and wheel.InLowspotWithWater then
+					maxSink = math.max(maxSink,SinkOfLowSpot);
+				end;
 
 				-- Get ground type
 				local groundType = 0;
@@ -1571,7 +1673,7 @@ function REA:REAupdateWheelSink(wheel, dt)
 					groundType = WheelsUtil.getGroundType(isOnField, wheel.contact ~= Wheels.WHEEL_GROUND_CONTACT, depth);
 				end;
 				-- DEBUG
-				--DebugUtil.drawDebugNode(wheel.driveNode, "density: " .. wheel.densityType, false)
+				--DebugUtil.drawDebugNode(wheel.driveNode, "max sink: " .. maxSink, false)
 
 				------------------------------------------------------
 				-- Sink from spinning the wheel
@@ -1665,9 +1767,11 @@ function REA:REAupdateWheelSink(wheel, dt)
     end
 end
 
+
 if REA.ModActivated == nil then
 	addModEventListener(REA);
 	REA.ModActivated = true;
+	REA.FilePath = g_currentModDirectory;
 	print("mod activated")
 
 	-- Exchange standard GIANT'S functions for editet by REA

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <modDesc descVersion="46">
-    <author>900Hasse, LSFarmers</author>
-	<version>1.1.0.0.1</version>
+    <author>900Hasse</author>
+	<version>1.2.0.0</version>
 	<title>
         <en>Added Realism For Vehicles, LS-Farmers Edition</en>
     </title>
@@ -38,7 +38,16 @@ The power added by fillspeed is now based on the mass of the mateial,
 grass needs more power then straw for example.
 Slightly increased friction of street tires.
 Added the wheel digging into the ground if no traction.
-Removed gearbox.]]>
+Removed gearbox.
+
+1.2.0.0:
+Added support for "REA Dynamic dirt", driving into standing water
+created by "REA Dynamic dirt" decrease friction and increase sink of wheels.
+Decreased power added by fillspeed with 25%.
+Decreased sink in rootcrops from 0,15m to 0,1m.
+Added a minimum sideway resistance to make vehicle more stable.
+Resolved issue where crawlers sufferd of extreme rolling resistance and low friction.
+]]>
 </en>
 <de>
 <![CDATA[Das Ziel dieses Mods ist es, das Spiel realistischer zu machen und
@@ -74,7 +83,16 @@ Die durch die Füllgeschwindigkeit hinzugefügte Kraft basiert nun auf der Masse
 gras braucht mehr strom als beispielsweise stroh.
 Leicht erhöhte Reibung der Straßenreifen.
 Fügte hinzu, dass das Rad in den Boden gräbt, wenn keine Traktion vorliegt.
-Getriebe ausgebaut.]]>
+Getriebe ausgebaut.
+
+1.2.0.0:
+Unterstützung für "REA Dynamic Dirt" hinzugefügt, der ins stehende Wasser fährt
+Erstellt durch "REA Dynamic Dirt" verringert die Reibung und erhöht die Senkung der Räder.
+Verringerte Leistung durch Füllgeschwindigkeit um 25% hinzugefügt.
+Verminderte Senke in Wurzelfrüchten von 0,15 m auf 0,1 m.
+Ein minimaler seitlicher Widerstand wurde hinzugefügt, um das Fahrzeug stabiler zu machen.
+Behobenes Problem, bei dem Raupen unter extremem Rollwiderstand und geringer Reibung leiden.
+]]>
 </de>
 <fr>
 <![CDATA[The goal of this mod is to make the game feel more realistic and
@@ -108,7 +126,16 @@ The power added by fillspeed is now based on the mass of the mateial,
 grass needs more power then straw for example.
 Slightly increased friction of street tires.
 Added the wheel digging into the ground if no traction.
-Removed gearbox.]]>
+Removed gearbox.
+
+1.2.0.0:
+Added support for "REA Dynamic dirt", driving into standing water
+created by "REA Dynamic dirt" decrease friction and increase sink of wheels.
+Decreased power added by fillspeed with 25%.
+Decreased sink in rootcrops from 0,15m to 0,1m.
+Added a minimum sideway resistance to make vehicle more stable.
+Resolved issue where crawlers sufferd of extreme rolling resistance and low friction.
+]]>
 </fr>
     </description>
 	<l10n>
