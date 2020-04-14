@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<modDesc descVersion="46">
+    <author>900Hasse, LSFarmers</author>
+	<version>1.1.0.0.1</version>
+	<title>
+        <en>Added Realism For Vehicles, LS-Farmers Edition</en>
+    </title>
+    <description>
+        <en>
+<![CDATA[The goal of this mod is to make the game feel more realistic and
+customizing the vehicle for the task more rewarding.
+The goal is to make the mod universal.
+This mod supports multiplayer and dedicated servers.
+No changes in XML is needed. Some data from XML is overwritten!
+
+Wheels:
+In the base game many vehicles does not take tiretype into consideration making for example
+the lizard pickup truck recive unrealistic high friction at all ground types.
+This mod fill the missing data based on tiretrack index making it universal.
+Different tiretypes now act completely different on different ground types and
+suffers differently on rain and sinking into the ground.
+This mod only supports the 4 standard tiretypes: MUD, STREET, OFFROAD and CRAWLERS!
+Calculates friction based on size of tire making wide tires, duals and tracks worth the money for
+heavy fieldwork but the narrows suffers making it ideal for easier tasks in later growth state.
+Adds rolling and sideway resistance meening: 
+More wheel load, small tires and soft ground = more force needed for pulling or pushing.
+Less wheel load, large tires and hard ground = less force needed for pulling or pushing.
+Wheels now dig down into the ground.
+
+Implements:
+Pulling force for "Plows", "cultivators" and "sowingmachines" is affected by ground type.
+Balers and loading wagons uses power based on fillspeed.
+
+1.1.0.0:
+Increased sink of wheels, this will make it harder to pull small wheels in soft ground.
+Added missing information about balers and loading wagons use power based on fillspeed.
+The power added by fillspeed is now based on the mass of the mateial, 
+grass needs more power then straw for example.
+Slightly increased friction of street tires.
+Added the wheel digging into the ground if no traction.
+Removed gearbox.]]>
+</en>
+<de>
+<![CDATA[Das Ziel dieses Mods ist es, das Spiel realistischer zu machen und
+Anpassen des Fahrzeugs für die Aufgabe lohnender.
+Das Ziel ist es, den Mod universell zu machen.
+Dieser Mod unterstützt Multiplayer und dedizierte Server.
+Es sind keine Änderungen in XML erforderlich. Einige Daten aus XML werden überschrieben!
+
+Räder:
+Im Grundspiel berücksichtigen viele Fahrzeuge nicht den Reifentyp
+Der lizard pickup truck weist bei allen Bodentypen eine unrealistisch hohe Reibung auf.
+Dieser Mod füllt die fehlenden Daten basierend auf dem Reifenspurindex und macht ihn so universell.
+Unterschiedliche Reifentypen wirken nun auf unterschiedlichen Untergründen und völlig unterschiedlich
+leidet anders am Regen und versinkt im Boden.
+Dieser Mod unterstützt nur die 4 Standard-Reifentypen: MUD, STREET, OFFROAD und CRAWLERS!
+Berechnet die Reibung basierend auf der Reifengröße,
+für die breite Reifen, Doppelreifen und Raupen das Geld wert sind
+Schwere Feldarbeit, aber die Enge leidet,
+was es ideal für leichtere Aufgaben in einem späteren Wachstumsstadium macht.
+Fügt Roll- und Seitenwiderstand hinzu:
+Mehr Radlast, kleine Reifen und weicher Untergrund = mehr Kraft zum Ziehen oder Schieben.
+Weniger Radlast, große Reifen und harter Untergrund = weniger Kraftaufwand beim Ziehen oder Schieben.
+Die Räder graben sich jetzt in den Boden.
+
+Implementiert:
+Die Zugkraft für "Pflüge", "Grubber" und "Sämaschinen" wird vom Bodentyp beeinflusst.
+Ballenpressen und Ladewagen verbrauchen Energie basierend auf der Füllgeschwindigkeit.
+
+1.1.0.0:
+Erhöhtes Einsinken der Räder erschwert das Ziehen kleiner Räder auf weichem Untergrund.
+Fehlende Informationen zu Ballenpressen und Ladewagen verbrauchen die Energie basierend auf der Füllgeschwindigkeit.
+Die durch die Füllgeschwindigkeit hinzugefügte Kraft basiert nun auf der Masse des Materials.
+gras braucht mehr strom als beispielsweise stroh.
+Leicht erhöhte Reibung der Straßenreifen.
+Fügte hinzu, dass das Rad in den Boden gräbt, wenn keine Traktion vorliegt.
+Getriebe ausgebaut.]]>
+</de>
+<fr>
+<![CDATA[The goal of this mod is to make the game feel more realistic and
+customizing the vehicle for the task more rewarding.
+The goal is to make the mod universal.
+This mod supports multiplayer and dedicated servers.
+No changes in XML is needed. Some data from XML is overwritten!
+
+Wheels:
+In the base game many vehicles does not take tiretype into consideration making for example
+the lizard pickup truck recive unrealistic high friction at all ground types.
+This mod fill the missing data based on tiretrack index making it universal.
+Different tiretypes now act completely different on different ground types and
+suffers differently on rain and sinking into the ground.
+This mod only supports the 4 standard tiretypes: MUD, STREET, OFFROAD and CRAWLERS!
+Calculates friction based on size of tire making wide tires, duals and tracks worth the money for
+heavy fieldwork but the narrows suffers making it ideal for easier tasks in later growth state.
+Adds rolling and sideway resistance meening: 
+More wheel load, small tires and soft ground = more force needed for pulling or pushing.
+Less wheel load, large tires and hard ground = less force needed for pulling or pushing.
+Wheels now dig down into the ground.
+
+Implements:
+Pulling force for "Plows", "cultivators" and "sowingmachines" is affected by ground type.
+Balers and loading wagons uses power based on fillspeed.
+
+1.1.0.0:
+Increased sink of wheels, this will make it harder to pull small wheels in soft ground.
+Added missing information about balers and loading wagons use power based on fillspeed.
+The power added by fillspeed is now based on the mass of the mateial, 
+grass needs more power then straw for example.
+Slightly increased friction of street tires.
+Added the wheel digging into the ground if no traction.
+Removed gearbox.]]>
+</fr>
+    </description>
+	<l10n>
+	</l10n>
+    <iconFilename>icon_REA.dds</iconFilename>
+	<multiplayer supported="true" />
+    <extraSourceFiles>
+        <sourceFile filename="REA.lua" />
+    </extraSourceFiles>
+</modDesc>
